@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "AMe4kNLwCJdNCo0hWdn6W1tdcSykixoWfCALXaeVbpnD2J7z1OLIEjruUyqq6xmr",
+    "database": "inventory_portal",
+    "host": "82.112.236.232",
+    "port":"5432",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "AMe4kNLwCJdNCo0hWdn6W1tdcSykixoWfCALXaeVbpnD2J7z1OLIEjruUyqq6xmr",
+    "database": "inventory_portal",
+    "host": "82.112.236.232",
+    "port":"5432",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "AMe4kNLwCJdNCo0hWdn6W1tdcSykixoWfCALXaeVbpnD2J7z1OLIEjruUyqq6xmr",
+    "database": "inventory_portal",
+    "host": "82.112.236.232",
+    "port":"5432",
+    "dialect": "postgres"
+  }
+}
