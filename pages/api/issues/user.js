@@ -16,21 +16,21 @@ export default async function handler(req, res) {
     // Get all issues for the specific user
     const issues = await prisma.issue.findMany({
       where: {
-        userRoll: roll,
+        rollNumber: roll,
       },
       include: {
-        item: true,
+        inventory: true,
       },
       orderBy: {
         issueDate: 'desc',
       },
     })
 
-    // Format the response
+    // Format the response to match the frontend expectations
     const formattedIssues = issues.map(issue => ({
       id: issue.id,
-      itemId: issue.itemId,
-      itemName: issue.item.title,
+      itemId: issue.inventoryId,
+      itemName: issue.inventory.title,
       quantity: issue.quantity,
       issueDate: issue.issueDate,
       returned: issue.returned,

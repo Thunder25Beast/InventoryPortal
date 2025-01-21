@@ -14,18 +14,18 @@ export default function ProfilePage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
-  const fetchUserIssues = async () => {
+  const fetchUserIssues = async (roll) => {
     try {
-      if (!userData?.roll) {
+      if (!roll) {
         console.error('No user roll number found')
         return
       }
 
-      const response = await axios.get(`/api/issues/user?roll=${userData.roll}`)
+      const response = await axios.get(`/api/issues/user?roll=${roll}`)
       setIssues(response.data)
+      setLoading(false)
     } catch (error) {
       console.error('Error fetching issues:', error)
-    } finally {
       setLoading(false)
     }
   }
@@ -36,9 +36,8 @@ export default function ProfilePage() {
     if (storedUserData) {
       const parsedUserData = JSON.parse(storedUserData)
       setUserData(parsedUserData)
-      // Only fetch issues after we have userData
       if (parsedUserData?.roll) {
-        fetchUserIssues()
+        fetchUserIssues(parsedUserData.roll)
       }
     } else {
       router.push('/')
