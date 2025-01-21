@@ -11,6 +11,11 @@ COPY .npmrc ./
 # Install dependencies with legacy peer deps
 RUN npm install --legacy-peer-deps
 
+# Copy configuration files
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+COPY next.config.js ./
+
 # Copy the rest of the application
 COPY . .
 
@@ -44,6 +49,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/styles ./styles
 
 # Expose the port the app runs on
 ENV PORT=3000

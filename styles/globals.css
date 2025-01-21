@@ -4,8 +4,8 @@
 
 /* Doraemon Theme Colors */
 :root {
-  --doraemon-blue: #2196f3;      /* Primary blue from Doraemon */
-  --doraemon-dark-blue: #1976d2; /* Darker shade for hover */
+  --doraemon-blue: #1E90FF;
+  --doraemon-dark-blue: #0066CC;
   --doraemon-red: #e94335;       /* Red from collar */
   --doraemon-yellow: #ffd700;    /* Bell color */
   --doraemon-white: #ffffff;     /* Body color */
@@ -28,9 +28,7 @@
   }
 
   .card {
-    @apply bg-white/90 rounded-3xl shadow-lg border-2 border-[#2196f3] 
-           overflow-hidden hover:shadow-xl transition-all duration-300
-           hover:border-[#1976d2];
+    @apply bg-white rounded-xl shadow-lg;
   }
 
   .section {
@@ -40,6 +38,26 @@
 
   .item-overlay {
     @apply absolute inset-0 bg-gradient-to-t from-black/50 to-transparent;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-[var(--doraemon-blue)] hover:bg-[var(--doraemon-dark-blue)] text-white rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border border-gray-300 hover:border-gray-400 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 flex items-center justify-center gap-2;
+  }
+
+  .form-input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  }
+
+  .form-checkbox {
+    @apply w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500;
   }
 }
 
@@ -72,31 +90,11 @@ body {
 }
 
 /* Form Styles */
-.form-input {
-  @apply w-full px-4 py-3 rounded-2xl border-2 border-[var(--doraemon-blue)] 
-         focus:border-[var(--doraemon-dark-blue)] focus:ring-2 focus:ring-[var(--doraemon-light-blue)]
-         transition-all duration-200 bg-white/80;
-}
-
 .form-label {
   @apply block text-[var(--doraemon-black)] font-semibold mb-2;
 }
 
 /* Button Styles */
-.btn-primary {
-  @apply flex items-center px-6 py-3 bg-[var(--doraemon-blue)] text-white rounded-full
-         font-semibold hover:bg-[var(--doraemon-dark-blue)] transition-all duration-200
-         border-2 border-[var(--doraemon-dark-blue)] shadow-md hover:shadow-lg
-         hover:scale-105 active:scale-95;
-}
-
-.btn-danger {
-  @apply flex items-center px-6 py-3 bg-[var(--doraemon-red)] text-white rounded-full
-         font-semibold hover:bg-red-600 transition-all duration-200
-         border-2 border-red-600 shadow-md hover:shadow-lg
-         hover:scale-105 active:scale-95;
-}
-
 .btn-yellow {
   @apply flex items-center px-6 py-3 bg-[var(--doraemon-yellow)] text-[var(--doraemon-black)] rounded-full
          font-semibold hover:bg-yellow-400 transition-all duration-200
@@ -134,8 +132,8 @@ body {
 
 /* Loading States */
 .loading-spinner {
-  @apply animate-spin w-12 h-12 border-4 border-[var(--doraemon-blue)] 
-         border-t-transparent rounded-full;
+  @apply w-8 h-8 border-4 border-blue-200 rounded-full animate-spin;
+  border-top-color: var(--doraemon-blue);
 }
 
 .loading-container {
