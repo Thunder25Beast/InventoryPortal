@@ -6,6 +6,7 @@ export default async function handler(req, res) {
   const { password } = req.body;
 
   if (password === process.env.ADMIN_PASSWORD) {
+    console.log(process.env.ADMIN_PASSWORD)
     return res.status(200).json({
       isAdmin: true,
       message: 'Admin login successful'
