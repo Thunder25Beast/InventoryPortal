@@ -1,6 +1,7 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   images: {
     domains: ['doraemon.fandom.com', 'static.wikia.nocookie.net', 'upload.wikimedia.org', 'example.com', 'your-storage-domain.com'],
     remotePatterns: [
