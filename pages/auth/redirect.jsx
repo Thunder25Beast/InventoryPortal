@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import config from '@/utils/config'
 
 function Redirect() {
   const [loading, setLoading] = useState(true)
@@ -13,7 +12,7 @@ function Redirect() {
   const getUserData = async (id) => {
     try {
       const response = await axios.post(
-        `${config.ssoUrl}/project/getuserdata`,
+        `${process.env.NEXT_PUBLIC_SSO_URL}/project/getuserdata`,
         { id: id }
       )
       console.log(response.data)
