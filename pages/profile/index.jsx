@@ -217,15 +217,6 @@ export default function ProfilePage() {
                       )}
                     </div>
                   </div>
-
-                  {!issue.returned && (
-                    <button
-                      onClick={() => handleReturn(issue.id)}
-                      className="btn-outline text-sm py-2 px-4 hover:bg-green-50 whitespace-nowrap"
-                    >
-                      Return Item
-                    </button>
-                  )}
                 </div>
               ))}
             </div>
