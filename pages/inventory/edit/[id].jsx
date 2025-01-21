@@ -22,6 +22,12 @@ export default function EditInventoryItem() {
   useEffect(() => {
     const fetchItem = async () => {
       if (!id) return
+      const userData = JSON.parse(localStorage.getItem('userdata'))
+      const isUserAdmin = userData?.isAdmin
+
+      if (!isUserAdmin) {
+        router.push('/inventory')
+      }
 
       try {
         const response = await axios.get(`/api/inventory/${id}`)

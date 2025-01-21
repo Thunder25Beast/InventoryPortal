@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { ArrowLeft, Upload, Plus, Minus } from 'lucide-react'
+import { use } from 'matter-js'
 
 export default function AddInventoryItem() {
   const router = useRouter()
@@ -16,6 +17,15 @@ export default function AddInventoryItem() {
     returnable: true,
     available: true
   })
+
+  const userData = JSON.parse(localStorage.getItem('userdata'))
+  const isUserAdmin = userData?.isAdmin
+
+  useEffect(() => {
+    if (!isUserAdmin) {
+      router.push('/inventory')
+    }
+  }, [isUserAdmin])
 
   const handleSubmit = async (e) => {
     e.preventDefault()

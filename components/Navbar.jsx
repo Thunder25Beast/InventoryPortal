@@ -3,12 +3,13 @@ import { LogOut, User, Package, Home } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
+import { clearAdminStatus } from '@/utils/auth'
 
 export default function Navbar({ userData }) {
   const router = useRouter()
 
   const handleLogout = () => {
-    localStorage.removeItem('userdata')
+    clearAdminStatus()
     router.push('/')
   }
 

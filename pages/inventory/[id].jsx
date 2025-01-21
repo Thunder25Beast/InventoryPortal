@@ -13,20 +13,18 @@ export default function InventoryItemDetails() {
   const { id } = router.query
   const [item, setItem] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [userData, setUserData] = useState(null)
   const [error, setError] = useState(null)
   const [rollNumber, setRollNumber] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [itemIssues, setItemIssues] = useState([])
   const [deleting, setDeleting] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     const storedUserData = localStorage.getItem('userdata')
+
     if (storedUserData) {
-      setUserData(JSON.parse(storedUserData))
-    } else {
-      router.push('/')
-      return
+      setIsAdmin(JSON.parse(storedUserData).isAdmin)
     }
 
     const fetchItemDetails = async () => {
@@ -128,7 +126,7 @@ export default function InventoryItemDetails() {
     setDeleting(true)
     try {
       const response = await axios.delete(`/api/inventory/${id}`)
-      
+
       if (response.status === 200) {
         alert('Item deleted successfully!')
         router.push('/inventory')
@@ -180,33 +178,35 @@ export default function InventoryItemDetails() {
           Back to Inventory
         </button>
 
-        {/* Admin Actions */}
-        <div className="flex gap-3">
-          <button
-            className="btn-yellow flex items-center"
-            onClick={() => router.push(`/inventory/edit/${id}`)}
-          >
-            <Edit className="w-5 h-5 mr-2" />
-            Edit
-          </button>
-          <button
-            className="btn-danger flex items-center gap-2 px-4 py-2"
-            onClick={handleDelete}
-            disabled={deleting}
-          >
-            {deleting ? (
-              <>
-                <div className="animate-spin w-5 h-5 border-2 border-white rounded-full border-t-transparent" />
-                <span>Deleting...</span>
-              </>
-            ) : (
-              <>
-                <Trash2 className="w-5 h-5" />
-                <span>Delete Item</span>
-              </>
-            )}
-          </button>
-        </div>
+        {/* Admin Actions - Only show if user is admin */}
+        {isAdmin && (
+          <div className="flex gap-3">
+            <button
+              className="btn-yellow flex items-center"
+              onClick={() => router.push(`/inventory/edit/${id}`)}
+            >
+              <Edit className="w-5 h-5 mr-2" />
+              Edit
+            </button>
+            <button
+              className="btn-danger flex items-center gap-2 px-4 py-2"
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              {deleting ? (
+                <>
+                  <div className="animate-spin w-5 h-5 border-2 border-white rounded-full border-t-transparent" />
+                  <span>Deleting...</span>
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-5 h-5" />
+                  <span>Delete Item</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Item Details */}
@@ -270,45 +270,49 @@ export default function InventoryItemDetails() {
             </div>
           </div>
 
-          {/* Issue Form */}
-          <div className="mt-6 bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold mb-4">Issue Item</h3>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Roll Number"
-                value={rollNumber}
-                onChange={(e) => setRollNumber(e.target.value)}
-                className="form-input w-full"
-                required
-              />
-              {item.quantity !== -1 && (
+          {/* Issue Form - Only show if user is admin */}
+          {isAdmin && (
+            <div className="mt-6 bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4">Issue Item</h3>
+              <div className="space-y-4">
                 <input
-                  type="number"
-                  placeholder="Quantity"
-                  value={quantity}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value)
-                    setQuantity(val > 0 ? val : 1)
-                  }}
-                  min="1"
-                  max={item.quantity}
+                  type="text"
+                  placeholder="Roll Number"
+                  value={rollNumber}
+                  onChange={(e) => setRollNumber(e.target.value)}
                   className="form-input w-full"
+                  required
                 />
-              )}
-              <button
-                onClick={handleIssueItem}
-                disabled={!rollNumber || item.quantity === 0}
-                className="btn-primary w-full"
-              >
-                Issue Item
-              </button>
+                {item.quantity !== -1 && (
+                  <input
+                    type="number"
+                    placeholder="Quantity"
+                    value={quantity}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value)
+                      setQuantity(val > 0 ? val : 1)
+                    }}
+                    min="1"
+                    max={item.quantity}
+                    className="form-input w-full"
+                  />
+                )}
+                <button
+                  onClick={handleIssueItem}
+                  disabled={!rollNumber || item.quantity === 0}
+                  className="btn-primary w-full"
+                >
+                  Issue Item
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Issues List */}
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">Issue History</h3>
+          {/* Issues List - Only show return button if user is admin */}
+
+          {isAdmin && (
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-4">Issue History</h3>
             {itemIssues.length === 0 ? (
               <p className="text-gray-500">No issues found for this item</p>
             ) : (
@@ -341,7 +345,7 @@ export default function InventoryItemDetails() {
                           </>
                         )}
                       </span>
-                      {!issue.returned && (
+                      {!issue.returned && isAdmin && (
                         <button
                           onClick={() => handleReturn(issue.id)}
                           className="btn-outline text-sm py-1 px-3 hover:bg-green-50"
@@ -351,10 +355,11 @@ export default function InventoryItemDetails() {
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

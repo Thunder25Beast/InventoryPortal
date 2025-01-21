@@ -13,17 +13,22 @@ export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const router = useRouter();
 
+
   useEffect(() => {
-    const storedUserData = localStorage.getItem('userdata');
+    const storedUserData = localStorage.getItem('userdata')
     if (storedUserData) {
-      setUserData(JSON.parse(storedUserData));
-    } else {
-      router.push('/');
-      return;
+      setUserData(JSON.parse(storedUserData))
+      console.log(storedUserData)
     }
 
     fetchUserIssues();
   }, [router]);
+
+  useEffect(() => {
+    if (userData?.isAdmin) {
+      router.push('/inventory')
+    }
+  }, [userData])
 
   const fetchUserIssues = async () => {
     try {

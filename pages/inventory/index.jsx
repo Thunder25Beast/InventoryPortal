@@ -22,6 +22,7 @@ export default function InventoryPage() {
     }
     fetchInventory()
   }, [router])
+  
 
   const fetchInventory = async () => {
     try {
@@ -70,21 +71,23 @@ export default function InventoryPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {userData?.isAdmin ? (
           <button
             className="btn-yellow hover:scale-[1.02] active:scale-[0.98] transition-transform"
             onClick={() => router.push('/inventory/add')}
           >
-            <PlusCircle className="w-5 h-5 mr-2" />
-            Add Item
-          </button>
-
-          <button
-            className="btn-primary hover:scale-[1.02] active:scale-[0.98] transition-transform"
-            onClick={() => router.push('/profile')}
-          >
-            <User className="w-5 h-5 mr-2" />
-            Profile
-          </button>
+              <PlusCircle className="w-5 h-5 mr-2" />
+              Add Item
+            </button>
+          ) : (
+            <button
+              className="btn-primary hover:scale-[1.02] active:scale-[0.98] transition-transform"
+              onClick={() => router.push('/profile')}
+            >
+              <User className="w-5 h-5 mr-2" />
+              Profile
+            </button>
+          )}
 
           <button
             className="btn-danger hover:scale-[1.02] active:scale-[0.98] transition-transform"

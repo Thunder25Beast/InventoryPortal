@@ -14,6 +14,7 @@ function Redirect() {
       const response = await axios.post('https://sso.tech-iitb.org/project/getuserdata', {
         id: id
       })
+      console.log(response.data)
       return response.data
     } catch (error) {
       throw new Error('Failed to fetch user data')
@@ -27,7 +28,11 @@ function Redirect() {
       try {
         setLoading(true)
         const data = await fetchUserData(accessid)
-        localStorage.setItem('userdata', JSON.stringify(data))
+        const updatedData = {
+          ...data,
+          isAdmin: false
+        }
+        localStorage.setItem('userdata', JSON.stringify(updatedData))
         router.push('/inventory')
       } catch (error) {
         setError(error.message)
