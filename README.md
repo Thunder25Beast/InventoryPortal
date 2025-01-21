@@ -1,8 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Inventory Management System
+
+A modern inventory management system built with Next.js, Prisma, and PostgreSQL. This application helps track and manage inventory items, user checkouts, and returns.
+
+## Features
+
+- User Management
+
+  - Create and manage user profiles with name, roll number, department, and degree
+  - Track user borrowing history
+  - Unique roll number validation
+
+- Inventory Management
+
+  - Add, edit, and remove inventory items
+  - Track item quantities
+  - Image upload support
+  - Returnable/non-returnable item designation
+
+- Issue Management
+  - Check out items to users
+  - Set return deadlines
+  - Track item returns
+  - Automatic quantity updates on checkout/return
+
+## Tech Stack
+
+- **Frontend**: Next.js 15.0, React 19
+- **Backend**: Next.js API Routes
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **UI Components**:
+  - Framer Motion for animations
+  - Lucide React for icons
+  - Matter.js for physics animations
+- **Styling**: Tailwind CSS
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+3. Set up your environment variables:
+
+```env
+# Create a .env file and add:
+DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
+```
+
+4. Run database migrations:
+
+```bash
+npx prisma migrate dev
+```
+
+5. Start the development server:
 
 ```bash
 npm run dev
@@ -10,27 +74,70 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Database Schema
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### User
 
-## Learn More
+```prisma
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  rollNumber  String   @unique
+  department  String
+  degree      String
+  issues      Issue[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Inventory
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```prisma
+model Inventory {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  img         String
+  quantity    Int
+  returnable  Boolean  @default(true)
+  issues      Issue[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Issue
 
-## Deploy on Vercel
+```prisma
+model Issue {
+  id           String    @id @default(uuid())
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  inventory    Inventory @relation(fields: [inventoryId], references: [id])
+  inventoryId  String
+  issueDate    DateTime  @default(now())
+  daysToReturn Int
+  returned     Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API Routes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/api/inventory` - Inventory CRUD operations
+- `/api/users` - User management
+- `/api/inventory/item/[id]/issue` - Item checkout endpoint
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+[MIT](LICENSE)
