@@ -8,7 +8,7 @@ import { User, LogOut, Package } from 'lucide-react';
 
 export default function ItemDetailsPage() {
   const router = useRouter();
-  const { id } = router.query;  
+  const { id } = router.query;
 
   const [item, setItem] = useState(null);
   const [issuedStudents, setIssuedStudents] = useState([]);
@@ -19,7 +19,7 @@ export default function ItemDetailsPage() {
 
   const fetchItemDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/inventory/item/${id}`);
+      const response = await axios.get(`/api/inventory/item/${id}`);
       setItem(response.data.item);
       setIssuedStudents(response.data.issuedStudents);
     } catch (error) {
@@ -36,10 +36,10 @@ export default function ItemDetailsPage() {
   const handleIssueSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:5000/inventory/item/${id}/issue`, newIssue);
+      await axios.post(`/api/inventory/item/${id}/issue`, newIssue);
       alert('Item successfully issued!');
-      setNewIssue({ userId: '', daysToReturn: '' }); 
-      fetchItemDetails(); 
+      setNewIssue({ userId: '', daysToReturn: '' });
+      fetchItemDetails();
     } catch (error) {
       console.error('Error issuing item:', error);
       alert('Failed to issue item.');
@@ -53,14 +53,14 @@ export default function ItemDetailsPage() {
   return (
     <div className="container mx-auto p-4">
       {/* Header */}
-        <header className="flex justify-between items-center mb-6 p-4 bg-white bg-opacity-90 shadow-md rounded-lg border-4 border-blue-300">
-          <div className="flex items-center">
-            <img
-              src="/img/logo.png"
-              alt="Doraemon"
-              className="h-6 md:h-8 align-top mr-4"
-            />
-          </div>
+      <header className="flex justify-between items-center mb-6 p-4 bg-white bg-opacity-90 shadow-md rounded-lg border-4 border-blue-300">
+        <div className="flex items-center">
+          <img
+            src="/img/logo.png"
+            alt="Doraemon"
+            className="h-6 md:h-8 align-top mr-4"
+          />
+        </div>
 
 
         <div className="flex flex-col sm:flex-row align-middle items-center gap-x-4 gap-y-2">
@@ -78,7 +78,7 @@ export default function ItemDetailsPage() {
           {/* Profile Button */}
           <motion.button
             className="bg-yellow-400 text-blue-700 py-2 px-6 rounded-full hover:bg-yellow-500 border-2 border-yellow-600 transition duration-200 flex items-center"
-            onClick={() => router.push('/profile')} 
+            onClick={() => router.push('/profile')}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >

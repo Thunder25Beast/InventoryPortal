@@ -16,7 +16,7 @@ export default function InventoryPage() {
 
   const fetchInventory = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/inventory/all')
+      const response = await axios.get('/api/inventory/all')
       const data = response.data
       setItems(data)
       setFilteredItems(data)
@@ -43,7 +43,7 @@ export default function InventoryPage() {
     
     setFilteredItems(
       items.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
       )
     )
@@ -53,7 +53,7 @@ export default function InventoryPage() {
     if (filter === 'all') {
       setFilteredItems(items)
     } else if (filter === 'available') {
-      setFilteredItems(items.filter(item => item.quantityAvailable > 0))
+      setFilteredItems(items.filter(item => item.quantity > 0))
     } else {
       setFilteredItems(items)
     }
@@ -173,11 +173,11 @@ export default function InventoryPage() {
                 whileTap={{ scale: 0.95 }}
               >
                 <div className="relative w-full h-48 mb-4">
-                  <img src={item.image} alt={item.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                  <img src={item.img} alt={item.title} layout="fill" objectFit="cover" className="rounded-t-lg" />
                 </div>
-                <h2 className="text-xl font-semibold text-blue-700 mb-2">{item.name}</h2>
+                <h2 className="text-xl font-semibold text-blue-700 mb-2">{item.title}</h2>
                 <p className="text-gray-600 mb-2">{item.description}</p>
-                <p className="text-blue-900 font-semibold mb-4">Available: {item.quantityAvailable}</p>
+                <p className="text-blue-900 font-semibold mb-4">Available: {item.quantity}</p>
                 <motion.button 
                   className="bg-yellow-400 text-blue-700 py-2 px-6 rounded-full hover:bg-yellow-500 transition duration-200 w-full font-bold"
                   onClick={() => router.push(`inventory/${item.id}`)} 
