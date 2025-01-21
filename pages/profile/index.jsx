@@ -14,33 +14,42 @@ export default function ProfilePage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const storedUserData = localStorage.getItem('userdata');
-    if (storedUserData) {
-      setUserData(JSON.parse(storedUserData));
-    } else {
-      router.push('/');
+  const fetchUserIssues = async () => {
+    try {
+      if (!userData?.roll) {
+        console.error('No user roll number found')
+        return
+      }
+
+      const response = await axios.get(`/api/issues/user?roll=${userData.roll}`)
+      setIssues(response.data)
+    } catch (error) {
+      console.error('Error fetching issues:', error)
+    } finally {
+      setLoading(false)
     }
-    fetchUserIssues();
-  }, [router]);
+  }
+
+  useEffect(() => {
+    setMounted(true)
+    const storedUserData = localStorage.getItem('userdata')
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData)
+      setUserData(parsedUserData)
+      // Only fetch issues after we have userData
+      if (parsedUserData?.roll) {
+        fetchUserIssues()
+      }
+    } else {
+      router.push('/')
+    }
+  }, [router])
 
   useEffect(() => {
     if (userData?.isAdmin) {
       router.push('/inventory');
     }
   }, [userData]);
-
-  const fetchUserIssues = async () => {
-    try {
-      const response = await axios.get('/api/issues/user');
-      setIssues(response.data);
-    } catch (error) {
-      console.error('Error fetching issues:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleReturn = async (issueId) => {
     try {
@@ -127,7 +136,7 @@ export default function ProfilePage() {
               <Building className="w-5 h-5 text-blue-500 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Department</p>
-                <p className="text-gray-800">{userData?.branch || 'N/A'}</p>
+                <p className="text-gray-800">{userData?.department || 'N/A'}</p>
               </div>
             </div>
 
@@ -137,7 +146,7 @@ export default function ProfilePage() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Program</p>
                 <p className="text-gray-800">
-                  {userData?.course || 'N/A'} {userData?.course && `(${userData.course})`}
+                  {userData?.degree || 'N/A'}
                 </p>
               </div>
             </div>
@@ -181,7 +190,7 @@ export default function ProfilePage() {
                   <div className="flex-grow">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-medium text-gray-800">
-                        {issue.inventory.title}
+                        {issue.itemName}
                       </h4>
                       <span className={`
                         px-2 py-1 rounded-full text-xs flex items-center gap-1
