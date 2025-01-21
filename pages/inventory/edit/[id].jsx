@@ -1,13 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
-import { ArrowLeft, Upload, Plus, Minus } from 'lucide-react'
+import { ArrowLeft, Save, Plus, Minus, Trash2 } from 'lucide-react'
 
-export default function AddInventoryItem() {
+export default function EditInventoryItem() {
   const router = useRouter()
+  const { id } = router.query
   const [loading, setLoading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -17,21 +19,61 @@ export default function AddInventoryItem() {
     available: true
   })
 
+  useEffect(() => {
+    const fetchItem = async () => {
+      if (!id) return
+
+      try {
+        const response = await axios.get(`/api/inventory/${id}`)
+        if (response.data) {
+          setFormData(response.data)
+        }
+      } catch (error) {
+        console.error('Error fetching item:', error)
+        alert('Failed to fetch item details')
+        router.push('/inventory')
+      }
+    }
+
+    fetchItem()
+  }, [id, router])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      const response = await axios.post('/api/inventory/create', formData)
+      const response = await axios.put(`/api/inventory/${id}`, formData)
       if (response.data) {
-        alert('Item added successfully!')
+        alert('Item updated successfully!')
         router.push('/inventory')
       }
     } catch (error) {
-      console.error('Error adding item:', error)
-      alert(error.response?.data?.message || 'Failed to add item')
+      console.error('Error updating item:', error)
+      alert(error.response?.data?.message || 'Failed to update item')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+      return
+    }
+
+    setDeleting(true)
+    try {
+      const response = await axios.delete(`/api/inventory/${id}`)
+
+      if (response.status === 200) {
+        alert('Item deleted successfully!')
+        router.push('/inventory')
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error)
+      const errorMessage = error.response?.data?.message || 'Failed to delete item'
+      alert(errorMessage)
+      setDeleting(false)  // Only reset if error
     }
   }
 
@@ -61,13 +103,31 @@ export default function AddInventoryItem() {
           <ArrowLeft className="w-5 h-5 mr-2" />
           Back to Inventory
         </button>
+
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="btn-danger flex items-center gap-2 px-4 py-2"
+        >
+          {deleting ? (
+            <>
+              <div className="animate-spin w-5 h-5 border-2 border-white rounded-full border-t-transparent" />
+              <span>Deleting...</span>
+            </>
+          ) : (
+            <>
+              <Trash2 className="w-5 h-5" />
+              <span>Delete Item</span>
+            </>
+          )}
+        </button>
       </div>
 
-      {/* Add Item Form */}
+      {/* Edit Form */}
       <div className="max-w-2xl mx-auto">
         <div className="card p-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">
-            Add New Item
+            Edit Item
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -90,7 +150,7 @@ export default function AddInventoryItem() {
               <label className="form-label">Description</label>
               <textarea
                 name="description"
-                value={formData.description}
+                value={formData.description || ''}
                 onChange={handleChange}
                 className="form-input min-h-[100px]"
                 placeholder="Enter item description"
@@ -104,7 +164,7 @@ export default function AddInventoryItem() {
                 <input
                   type="text"
                   name="img"
-                  value={formData.img}
+                  value={formData.img || ''}
                   onChange={handleChange}
                   className="form-input flex-grow"
                   placeholder="Enter image URL"
@@ -136,7 +196,7 @@ export default function AddInventoryItem() {
                   value={formData.quantity}
                   onChange={handleChange}
                   className="form-input text-center"
-                  min="0"
+                  min="-1"
                 />
                 <button
                   type="button"
@@ -188,8 +248,8 @@ export default function AddInventoryItem() {
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2">
-                  <Upload className="w-5 h-5" />
-                  Add Item
+                  <Save className="w-5 h-5" />
+                  Save Changes
                 </div>
               )}
             </button>
@@ -198,4 +258,4 @@ export default function AddInventoryItem() {
       </div>
     </div>
   )
-}
+} 

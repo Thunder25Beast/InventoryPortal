@@ -1,137 +1,227 @@
+'use client'
+
 // components/Profile.js
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { LogOut, Package } from 'lucide-react';
+import { LogOut, Package, Clock, ArrowLeft, Check, X, User, Mail, Building, GraduationCap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 
-export default function Profile() {
-  const [user, setUser] = useState(null);
-  const [issuedItems, setIssuedItems] = useState([]);
+export default function ProfilePage() {
+  const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [userData, setUserData] = useState(null);
   const router = useRouter();
-
-  const fetchUserData = async (roll) => {
-    try {
-      const response = await axios.get(`http://localhost:5000/user/${roll}`);
-      setUser(response.data.user);
-      setIssuedItems(response.data.issuedItems);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     const storedUserData = localStorage.getItem('userdata');
     if (storedUserData) {
-      const parsedData = JSON.parse(storedUserData);
-      console.log(parsedData);
-      setUser(parsedData);
-      fetchUserData(parsedData.roll);
+      setUserData(JSON.parse(storedUserData));
+    } else {
+      router.push('/');
+      return;
     }
-  }, []);
+
+    fetchUserIssues();
+  }, [router]);
+
+  const fetchUserIssues = async () => {
+    try {
+      const response = await axios.get('/api/issues/user');
+      setIssues(response.data);
+    } catch (error) {
+      console.error('Error fetching issues:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReturn = async (issueId) => {
+    try {
+      const response = await axios.post('/api/issues/return', { issueId });
+
+      if (response.data) {
+        // Refresh issues list
+        await fetchUserIssues();
+        alert('Item returned successfully!');
+      }
+    } catch (error) {
+      console.error('Error returning item:', error);
+      alert(error.response?.data?.message || 'Failed to return item');
+    }
+  };
 
   if (loading) {
-    return(
-      <div className="container mx-auto flex justify-center items-center h-screen">
-        <p className="text-2xl font-bold">Loading...</p>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin w-10 h-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
       </div>
-    )
-  }
-
-  if (!user) {
-    return <div>Error: User not found</div>;
+    );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <header className="flex flex-col sm:flex-row justify-between items-center mb-6 p-4 bg-white bg-opacity-90 shadow-md rounded-lg border-4 border-blue-300">
-        <div className="flex items-center mb-4 md:mb-0">
-          <img
-            src="/img/logo.png"
-            alt="Doraemon"
-            className="h-6 md:h-8 align-top mr-4"
-          />
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <button
+          onClick={() => router.push('/inventory')}
+          className="btn-outline flex items-center"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back to Inventory
+        </button>
 
-        {/* Inventory Button */}
-        <div className="flex flex-col sm:flex-row align-middle items-center gap-x-4 gap-y-2">
-          <motion.button
-            className="bg-green-400 text-black py-2 px-6 border-2 border-green-800 rounded-full hover:bg-green-500 transition duration-200 flex items-center"
-            onClick={() => router.push('/inventory')}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Package className="mr-2" />
-            Inventory
-          </motion.button>
-
-          {/* Logout Button */}
-          <motion.button
-            className="bg-red-400 text-black py-2 px-6 border-2 border-red-800 rounded-full hover:bg-red-500 transition duration-200 flex items-center"
-            onClick={() => {
-              localStorage.removeItem('userdata');
-              router.push('/');
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <LogOut className="mr-2" />
-            Logout
-          </motion.button>
-        </div>
-      </header>
-      <div className="bg-white shadow-md p-6 rounded-lg mb-6">
-        <h1 className="text-3xl font-bold mb-4">Profile</h1>
-
-        <table className="table-auto w-full">
-          <tbody>
-            <tr>
-              <td className="font-bold pr-4">Name</td>
-              <td>{user.name}</td>
-            </tr>
-            <tr>
-              <td className="font-bold pr-4">Roll No</td>
-              <td>{user.rollNumber}</td>
-            </tr>
-            <tr>
-              <td className="font-bold pr-4">Department</td>
-              <td>{user.department}</td>
-            </tr>
-            <tr>
-              <td className="font-bold pr-4">Degree</td>
-              <td>{user.degree}</td>
-            </tr>
-          </tbody>
-        </table>
+        <button
+          className="btn-danger flex items-center"
+          onClick={() => {
+            localStorage.removeItem('userdata');
+            router.push('/');
+          }}
+        >
+          <LogOut className="w-5 h-5 mr-2" />
+          Logout
+        </button>
       </div>
 
-      {/* Issued Items */}
-      <div className="bg-white shadow-md p-6 rounded-lg">
-        <h2 className="text-2xl font-bold mb-4">Issued Items</h2>
-        {issuedItems.length === 0 ? (
-          <p>No items issued.</p>
-        ) : (
-          <ul className="space-y-4">
-            {issuedItems.map((item) => (
-              <li key={item.id} className="border-b pb-4">
-                <div className="flex items-center space-x-4">
-                  <img src={item.Inventory.img} alt={item.Inventory.title} className="w-16 h-16 object-cover rounded-lg" />
-                  <div>
-                    <h3 className="text-xl font-bold">{item.Inventory.title}</h3>
-                    <p>{item.Inventory.description}</p>
-                    <p><strong>Issue Date:</strong> {new Date(item.issueDate).toLocaleDateString()}</p>
-                    <p><strong>Return Date:</strong> {item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'Not returned yet'}</p>
-                    <p><strong>Status:</strong> {item.returned ? 'Returned' : 'Not Returned'}</p>
-                  </div>
+      {/* Profile Info */}
+      <div className="grid md:grid-cols-3 gap-8">
+        {/* User Details Card */}
+        <div className="card p-6">
+          {/* Profile Header */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <User className="w-8 h-8 text-blue-500" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-800">
+                {userData?.name || 'User'}
+              </h2>
+              <p className="text-gray-500">
+                {userData?.rollNumber || 'No Roll Number'}
+              </p>
+            </div>
+          </div>
+
+          {/* User Details List */}
+          <div className="space-y-4">
+            {/* Email */}
+            <div className="flex items-start gap-3">
+              <Mail className="w-5 h-5 text-blue-500 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Email</p>
+                <p className="text-gray-800">{userData?.email || 'N/A'}</p>
+              </div>
+            </div>
+
+            {/* Department */}
+            <div className="flex items-start gap-3">
+              <Building className="w-5 h-5 text-blue-500 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Department</p>
+                <p className="text-gray-800">{userData?.department || 'N/A'}</p>
+              </div>
+            </div>
+
+            {/* Course Details */}
+            <div className="flex items-start gap-3">
+              <GraduationCap className="w-5 h-5 text-blue-500 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Program</p>
+                <p className="text-gray-800">
+                  {userData?.course || 'N/A'} {userData?.degree && `(${userData.degree})`}
+                </p>
+              </div>
+            </div>
+
+            {/* Additional SSO Data */}
+            {userData?.ssoData && (
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <h3 className="text-sm font-medium text-gray-600 mb-3">Additional Information</h3>
+                <div className="space-y-2 text-sm">
+                  {Object.entries(userData.ssoData).map(([key, value]) => (
+                    key !== 'name' && key !== 'email' && (
+                      <div key={key} className="flex justify-between">
+                        <span className="text-gray-600 capitalize">
+                          {key.replace(/_/g, ' ')}:
+                        </span>
+                        <span className="text-gray-800">{value}</span>
+                      </div>
+                    )
+                  ))}
                 </div>
-              </li>
-            ))}
-          </ul>
-        )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Issues Summary */}
+        <div className="md:col-span-2">
+          <h3 className="text-lg font-semibold mb-4">Issued Items</h3>
+
+          {issues.length === 0 ? (
+            <div className="card p-6 text-center text-gray-500">
+              No items currently issued
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {issues.map((issue) => (
+                <div
+                  key={issue.id}
+                  className="card p-4 flex flex-col md:flex-row justify-between md:items-center gap-4"
+                >
+                  <div className="flex-grow">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-medium text-gray-800">
+                        {issue.inventory.title}
+                      </h4>
+                      <span className={`
+                        px-2 py-1 rounded-full text-xs flex items-center gap-1
+                        ${issue.returned ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
+                      `}>
+                        {issue.returned ? (
+                          <>
+                            <Check className="w-3 h-3" />
+                            Returned
+                          </>
+                        ) : (
+                          <>
+                            <X className="w-3 h-3" />
+                            Pending
+                          </>
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                      <div className="flex items-center">
+                        <Package className="w-4 h-4 mr-1" />
+                        Quantity: {issue.quantity}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="w-4 h-4 mr-1" />
+                        Issued: {new Date(issue.issueDate).toLocaleDateString()}
+                      </div>
+                      {issue.daysToReturn > 0 && !issue.returned && (
+                        <div className="text-yellow-600">
+                          Return within {issue.daysToReturn} days
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {!issue.returned && (
+                    <button
+                      onClick={() => handleReturn(issue.id)}
+                      className="btn-outline text-sm py-2 px-4 hover:bg-green-50 whitespace-nowrap"
+                    >
+                      Return Item
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

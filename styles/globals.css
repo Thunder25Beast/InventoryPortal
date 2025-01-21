@@ -1,3 +1,186 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Doraemon Theme Colors */
+:root {
+  --doraemon-blue: #2196f3;      /* Primary blue from Doraemon */
+  --doraemon-dark-blue: #1976d2; /* Darker shade for hover */
+  --doraemon-red: #e94335;       /* Red from collar */
+  --doraemon-yellow: #ffd700;    /* Bell color */
+  --doraemon-white: #ffffff;     /* Body color */
+  --doraemon-black: #333333;     /* Lines and details */
+  --doraemon-light-blue: #e3f2fd; /* Light background */
+  --doraemon-cream: #fff9c4;     /* Secondary background */
+}
+
+@layer base {
+  /* Custom base styles can go here if needed */
+}
+
+@layer components {
+  .page-container {
+    @apply min-h-screen p-4 bg-[url('/img/doraemon-pattern.png')] bg-fixed bg-opacity-5;
+  }
+
+  .content-container {
+    @apply container mx-auto max-w-7xl backdrop-blur-sm;
+  }
+
+  .card {
+    @apply bg-white/90 rounded-3xl shadow-lg border-2 border-[#2196f3] 
+           overflow-hidden hover:shadow-xl transition-all duration-300
+           hover:border-[#1976d2];
+  }
+
+  .section {
+    @apply bg-white/90 rounded-3xl p-8 shadow-lg border-2 border-[#2196f3] 
+           mb-8 hover:shadow-xl transition-all duration-300;
+  }
+
+  .item-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/50 to-transparent;
+  }
+}
+
+@layer utilities {
+  /* Custom utility classes */
+  .gradient-overlay {
+    background: linear-gradient(to top, rgba(51, 51, 51, 0.5) 0%, transparent 100%);
+  }
+}
+
+/* Base Styles */
+body {
+  @apply bg-gradient-to-br from-[#e3f2fd] to-[#bbdefb] min-h-screen font-sans;
+  background-attachment: fixed;
+}
+
+/* Header Styles */
+.page-header {
+  @apply flex justify-between items-center mb-8 p-6 
+         bg-gradient-to-r from-[var(--doraemon-blue)] to-[var(--doraemon-dark-blue)]
+         rounded-3xl shadow-lg text-white;
+}
+
+.header-title {
+  @apply text-2xl font-bold text-white;
+}
+
+.header-subtitle {
+  @apply text-[var(--doraemon-light-blue)];
+}
+
+/* Form Styles */
+.form-input {
+  @apply w-full px-4 py-3 rounded-2xl border-2 border-[var(--doraemon-blue)] 
+         focus:border-[var(--doraemon-dark-blue)] focus:ring-2 focus:ring-[var(--doraemon-light-blue)]
+         transition-all duration-200 bg-white/80;
+}
+
+.form-label {
+  @apply block text-[var(--doraemon-black)] font-semibold mb-2;
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply flex items-center px-6 py-3 bg-[var(--doraemon-blue)] text-white rounded-full
+         font-semibold hover:bg-[var(--doraemon-dark-blue)] transition-all duration-200
+         border-2 border-[var(--doraemon-dark-blue)] shadow-md hover:shadow-lg
+         hover:scale-105 active:scale-95;
+}
+
+.btn-danger {
+  @apply flex items-center px-6 py-3 bg-[var(--doraemon-red)] text-white rounded-full
+         font-semibold hover:bg-red-600 transition-all duration-200
+         border-2 border-red-600 shadow-md hover:shadow-lg
+         hover:scale-105 active:scale-95;
+}
+
+.btn-yellow {
+  @apply flex items-center px-6 py-3 bg-[var(--doraemon-yellow)] text-[var(--doraemon-black)] rounded-full
+         font-semibold hover:bg-yellow-400 transition-all duration-200
+         border-2 border-yellow-500 shadow-md hover:shadow-lg
+         hover:scale-105 active:scale-95;
+}
+
+/* Card Components */
+.item-card {
+  @apply bg-white/90 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl 
+         transition-all duration-300 border-2 border-[var(--doraemon-blue)]
+         hover:border-[var(--doraemon-dark-blue)] hover:-translate-y-1;
+}
+
+.item-image-container {
+  @apply relative aspect-square overflow-hidden;
+}
+
+.item-image {
+  @apply w-full h-full object-cover transition-transform duration-300
+         hover:scale-110;
+}
+
+.item-content {
+  @apply p-6 bg-white/90;
+}
+
+.item-title {
+  @apply text-xl font-bold text-[var(--doraemon-blue)] mb-2;
+}
+
+.item-description {
+  @apply text-[var(--doraemon-black)] mb-4 line-clamp-2;
+}
+
+/* Loading States */
+.loading-spinner {
+  @apply animate-spin w-12 h-12 border-4 border-[var(--doraemon-blue)] 
+         border-t-transparent rounded-full;
+}
+
+.loading-container {
+  @apply flex flex-col items-center justify-center min-h-screen gap-4;
+}
+
+/* Custom Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Badge Styles */
+.badge {
+  @apply px-3 py-1 rounded-full text-sm font-semibold;
+}
+
+.badge-available {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-unavailable {
+  @apply bg-red-100 text-red-800;
+}
+
+/* Grid Layouts */
+.inventory-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .btn-primary, .btn-danger, .btn-yellow {
+    @apply px-4 py-2 text-sm;
+  }
+  
+  .page-header {
+    @apply flex-col gap-4;
+  }
+  
+  .header-actions {
+    @apply w-full flex justify-center gap-2;
+  }
+}
