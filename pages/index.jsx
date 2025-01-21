@@ -38,7 +38,7 @@ export default function LabInventoryLoginPage() {
           {/* Login Button */}
           <motion.a
             className="group relative overflow-hidden bg-[var(--doraemon-blue)] hover:bg-[var(--doraemon-dark-blue)] text-white px-8 py-3 rounded-xl inline-flex items-center justify-center w-full font-medium transition-colors"
-            href="https://sso.tech-iitb.org/project/40e664ff-16a1-4e8e-97c6-a54bfdf8ee11/ssocall"
+            href={`${process.env.NEXT_PUBLIC_SSO_URL}/project/${process.env.NEXT_PUBLIC_SSO_PROJECT_ID}/ssocall`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

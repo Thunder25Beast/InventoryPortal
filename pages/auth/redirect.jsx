@@ -9,11 +9,12 @@ function Redirect() {
 
   const { accessid } = router.query
 
-  const fetchUserData = async (id) => {
+  const getUserData = async (id) => {
     try {
-      const response = await axios.post('https://sso.tech-iitb.org/project/getuserdata', {
-        id: id
-      })
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SSO_URL}/project/getuserdata`,
+        { id: id }
+      )
       console.log(response.data)
       return response.data
     } catch (error) {
@@ -27,7 +28,7 @@ function Redirect() {
     const initializeUser = async () => {
       try {
         setLoading(true)
-        const data = await fetchUserData(accessid)
+        const data = await getUserData(accessid)
         const updatedData = {
           ...data,
           isAdmin: false
