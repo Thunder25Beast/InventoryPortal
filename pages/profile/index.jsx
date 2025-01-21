@@ -106,7 +106,7 @@ export default function ProfilePage() {
                 {userData?.name || 'User'}
               </h2>
               <p className="text-gray-500">
-                {userData?.rollNumber || 'No Roll Number'}
+                {userData?.roll || 'No Roll Number'}
               </p>
             </div>
           </div>
@@ -118,7 +118,7 @@ export default function ProfilePage() {
               <Mail className="w-5 h-5 text-blue-500 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Email</p>
-                <p className="text-gray-800">{userData?.email || 'N/A'}</p>
+                <p className="text-gray-800">{userData?.roll || 'N/A'}@iitb.ac.in</p>
               </div>
             </div>
 
@@ -127,7 +127,7 @@ export default function ProfilePage() {
               <Building className="w-5 h-5 text-blue-500 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Department</p>
-                <p className="text-gray-800">{userData?.department || 'N/A'}</p>
+                <p className="text-gray-800">{userData?.branch || 'N/A'}</p>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ export default function ProfilePage() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Program</p>
                 <p className="text-gray-800">
-                  {userData?.course || 'N/A'} {userData?.degree && `(${userData.degree})`}
+                  {userData?.course || 'N/A'} {userData?.course && `(${userData.course})`}
                 </p>
               </div>
             </div>
