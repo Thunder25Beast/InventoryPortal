@@ -7,6 +7,7 @@ import {
   ArrowLeft, Package, Clock, User,
   Edit, Trash2, ShoppingCart, Check, X
 } from 'lucide-react'
+import Image from 'next/image'
 
 export default function InventoryItemDetails() {
   const router = useRouter()
@@ -19,10 +20,11 @@ export default function InventoryItemDetails() {
   const [itemIssues, setItemIssues] = useState([])
   const [deleting, setDeleting] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const storedUserData = localStorage.getItem('userdata')
-
     if (storedUserData) {
       setIsAdmin(JSON.parse(storedUserData).isAdmin)
     }
@@ -140,6 +142,9 @@ export default function InventoryItemDetails() {
     }
   }
 
+  // Prevent hydration errors by not rendering until mounted
+  if (!mounted) return null
+
   // Loading State
   if (loading) {
     return (
@@ -212,14 +217,17 @@ export default function InventoryItemDetails() {
       {/* Item Details */}
       <div className="grid md:grid-cols-2 gap-8">
         {/* Image Section */}
-        <img
-          src={item.img || '/img/default-item.png'}
-          alt={item.title}
-          className="max-h-96 object-contain rounded-2xl border border-gray-200 shadow-lg"
-          onError={(e) => {
-            e.target.src = '/img/default-item.png'
-          }}
-        />
+        <div className="relative w-full h-96">
+          <Image
+            src={item.img || '/img/default-item.png'}
+            alt={item.title}
+            fill
+            className="object-contain rounded-2xl border border-gray-200 shadow-lg"
+            onError={(e) => {
+              e.target.src = '/img/default-item.png'
+            }}
+          />
+        </div>
 
         {/* Details Section */}
         <div>
@@ -313,48 +321,48 @@ export default function InventoryItemDetails() {
           {isAdmin && (
             <div className="mt-8">
               <h3 className="text-lg font-semibold mb-4">Issue History</h3>
-            {itemIssues.length === 0 ? (
-              <p className="text-gray-500">No issues found for this item</p>
-            ) : (
-              <div className="space-y-4">
-                {itemIssues.map((issue) => (
-                  <div
-                    key={issue.id}
-                    className="bg-white border rounded-lg p-4 flex justify-between items-center"
-                  >
-                    <div>
-                      <p className="font-medium">Roll Number: {issue.rollNumber}</p>
-                      <p className="text-sm text-gray-500">
-                        Quantity: {issue.quantity} | Date: {new Date(issue.issueDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`
+              {itemIssues.length === 0 ? (
+                <p className="text-gray-500">No issues found for this item</p>
+              ) : (
+                <div className="space-y-4">
+                  {itemIssues.map((issue) => (
+                    <div
+                      key={issue.id}
+                      className="bg-white border rounded-lg p-4 flex justify-between items-center"
+                    >
+                      <div>
+                        <p className="font-medium">Roll Number: {issue.rollNumber}</p>
+                        <p className="text-sm text-gray-500">
+                          Quantity: {issue.quantity} | Date: {new Date(issue.issueDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`
                         px-2 py-1 rounded-full text-xs flex items-center gap-1
                         ${issue.returned ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
                       `}>
-                        {issue.returned ? (
-                          <>
-                            <Check className="w-3 h-3" />
-                            Returned
-                          </>
-                        ) : (
-                          <>
-                            <X className="w-3 h-3" />
-                            Pending
-                          </>
+                          {issue.returned ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              Returned
+                            </>
+                          ) : (
+                            <>
+                              <X className="w-3 h-3" />
+                              Pending
+                            </>
+                          )}
+                        </span>
+                        {!issue.returned && isAdmin && (
+                          <button
+                            onClick={() => handleReturn(issue.id)}
+                            className="btn-outline text-sm py-1 px-3 hover:bg-green-50"
+                          >
+                            Return
+                          </button>
                         )}
-                      </span>
-                      {!issue.returned && isAdmin && (
-                        <button
-                          onClick={() => handleReturn(issue.id)}
-                          className="btn-outline text-sm py-1 px-3 hover:bg-green-50"
-                        >
-                          Return
-                        </button>
-                      )}
+                      </div>
                     </div>
-                  </div>
                   ))}
                 </div>
               )}

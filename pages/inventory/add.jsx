@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { ArrowLeft, Upload, Plus, Minus } from 'lucide-react'
@@ -17,15 +17,22 @@ export default function AddInventoryItem() {
     returnable: true,
     available: true
   })
-
-  const userData = JSON.parse(localStorage.getItem('userdata'))
-  const isUserAdmin = userData?.isAdmin
+  const [mounted, setMounted] = useState(false)
+  const [isUserAdmin, setIsUserAdmin] = useState(false)
 
   useEffect(() => {
-    if (!isUserAdmin) {
-      router.push('/inventory')
+    setMounted(true)
+    const storedUserData = localStorage.getItem('userdata')
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData)
+      setIsUserAdmin(userData?.isAdmin)
+    } else {
+      router.push('/')
     }
-  }, [isUserAdmin])
+  }, [router])
+
+  // Prevent hydration errors by not rendering until mounted
+  if (!mounted) return null
 
   const handleSubmit = async (e) => {
     e.preventDefault()

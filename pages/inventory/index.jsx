@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { LogOut, Search, User, Package, PlusCircle, Filter } from 'lucide-react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
+import Image from 'next/image'
 
 export default function InventoryPage() {
   const [items, setItems] = useState([])
@@ -12,8 +13,10 @@ export default function InventoryPage() {
   const [userData, setUserData] = useState(null)
   const [filterType, setFilterType] = useState('all')
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const storedUserData = localStorage.getItem('userdata')
     if (storedUserData) {
       setUserData(JSON.parse(storedUserData))
@@ -22,7 +25,7 @@ export default function InventoryPage() {
     }
     fetchInventory()
   }, [router])
-  
+
 
   const fetchInventory = async () => {
     try {
@@ -50,6 +53,9 @@ export default function InventoryPage() {
     setFilteredItems(filtered)
   }, [searchQuery, items, filterType])
 
+  // Prevent hydration errors by not rendering until mounted
+  if (!mounted) return null
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -72,10 +78,10 @@ export default function InventoryPage() {
 
         <div className="flex items-center gap-3">
           {userData?.isAdmin ? (
-          <button
-            className="btn-yellow hover:scale-[1.02] active:scale-[0.98] transition-transform"
-            onClick={() => router.push('/inventory/add')}
-          >
+            <button
+              className="btn-yellow hover:scale-[1.02] active:scale-[0.98] transition-transform"
+              onClick={() => router.push('/inventory/add')}
+            >
               <PlusCircle className="w-5 h-5 mr-2" />
               Add Item
             </button>
@@ -154,14 +160,12 @@ export default function InventoryPage() {
                          hover:border-blue-100"
             >
               {/* Image Container */}
-              <div className="relative h-48 bg-gray-50 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-100 opacity-50 group-hover:opacity-30 transition-opacity"></div>
-                <img
+              <div className="relative w-full h-48">
+                <Image
                   src={item.img || '/img/default-item.png'}
                   alt={item.title}
-                  className="w-full h-full object-contain p-4 
-                             transition-transform duration-300 
-                             group-hover:scale-105"
+                  fill
+                  className="object-cover rounded-t-lg"
                   onError={(e) => {
                     e.target.src = '/img/default-item.png'
                   }}

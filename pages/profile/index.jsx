@@ -12,23 +12,24 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const router = useRouter();
-
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const storedUserData = localStorage.getItem('userdata')
+    setMounted(true);
+    const storedUserData = localStorage.getItem('userdata');
     if (storedUserData) {
-      setUserData(JSON.parse(storedUserData))
-      console.log(storedUserData)
+      setUserData(JSON.parse(storedUserData));
+    } else {
+      router.push('/');
     }
-
     fetchUserIssues();
   }, [router]);
 
   useEffect(() => {
     if (userData?.isAdmin) {
-      router.push('/inventory')
+      router.push('/inventory');
     }
-  }, [userData])
+  }, [userData]);
 
   const fetchUserIssues = async () => {
     try {
@@ -55,6 +56,9 @@ export default function ProfilePage() {
       alert(error.response?.data?.message || 'Failed to return item');
     }
   };
+
+  // Prevent hydration errors by not rendering until mounted
+  if (!mounted) return null;
 
   if (loading) {
     return (
