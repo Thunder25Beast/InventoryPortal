@@ -20,12 +20,13 @@ export default async function handler(req, res) {
     }
 
     // Validate roll number format (optional)
-    if (!/^\d{2}[a-zA-Z]\d{4}$/.test(rollNumber)) {
+    // Before batch of 2022, we used to have 9 digit roll numbers, so it will search for either of them
+    if (!/^(?:\d{2}[a-zA-Z]\d{4}|\d{9})$/.test(rollNumber)) {
       return res.status(400).json({
         message: 'Invalid roll number format'
       })
     }
-
+   
     // Fetch inventory item
     const inventoryItem = await prisma.inventory.findUnique({
       where: { id: inventoryId }
